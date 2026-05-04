@@ -30,16 +30,21 @@ try:
     print(f"Datasets found in Kaggle: {datasets_in_kaggle}")
     
     if len(datasets_in_kaggle) > 0:
-        # If there's a folder inside the dataset folder, we might need to point to it.
-        # usually it's /kaggle/input/dataset-name/
-        dataset_path = os.path.join(kaggle_input_dir, datasets_in_kaggle[0])
+        base_dataset_path = os.path.join(kaggle_input_dir, datasets_in_kaggle[0])
+        dataset_path = base_dataset_path
         
-        # Sometimes the dataset itself contains another folder, let's check for 'images' or 'masks'
-        # to ensure we are at the right root directory.
-        subdirs = os.listdir(dataset_path)
-        print(f"Contents of {dataset_path}: {subdirs}")
+        # Search for the directory that actually contains 'images' and 'masks'
+        found_target_dir = False
+        for root, dirs, files in os.walk(base_dataset_path):
+            if 'images' in dirs and 'masks' in dirs:
+                dataset_path = root
+                found_target_dir = True
+                break
         
-        print(f"✅ Automatically selected dataset path: {dataset_path}")
+        if found_target_dir:
+            print(f"✅ Automatically found dataset path containing 'images' and 'masks': {dataset_path}")
+        else:
+            print(f"⚠️ Could not find both 'images' and 'masks' folders inside {base_dataset_path}. Please check your dataset structure.")
     else:
         print("⚠️ No datasets found in /kaggle/input/. Did you forget to add the dataset to the notebook?")
         dataset_path = "/kaggle/input/YOUR_DATASET_NAME"
