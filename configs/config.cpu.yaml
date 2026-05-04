@@ -1,0 +1,130 @@
+project:
+  name: "DINSNet"
+  output_root: "outputs"
+  experiment_prefix: "exp"
+  seed: 3407
+  deterministic: true
+
+data:
+  root_dir: "datasets"
+  image_dir_name: "images"
+  mask_dir_name: "masks"
+  image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"]
+  mask_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"]
+  image_size: [352, 352]
+  split:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+    stratify_by_domain: true
+    allow_image_level_split: false
+  domain_generalization:
+    enabled: false
+    mode: "leave_one_domain_out"
+    held_out_domains: []
+  loader:
+    batch_size: 2
+    num_workers: 0
+    pin_memory: false
+    persistent_workers: false
+  augmentation:
+    enable: true
+    horizontal_flip_prob: 0.5
+    vertical_flip_prob: 0.2
+    rotate_prob: 0.4
+    rotate_limit: 25
+    shift_limit: 0.08
+    scale_limit: 0.10
+    brightness_contrast_prob: 0.3
+    brightness_limit: 0.2
+    contrast_limit: 0.2
+    gauss_noise_prob: 0.2
+    gauss_noise_var_limit: [10.0, 50.0]
+  preprocessing:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+    resize_mode: "pad"
+    pad_value: 0
+  grouping:
+    enabled: true
+    mode: "filename_prefix"
+    filename_delimiter: "_"
+    filename_prefix_parts: 1
+    include_domain: true
+
+model:
+  in_channels: 3
+  num_classes: 1
+  base_channels: 32
+  channel_multipliers: [1, 2, 4, 8]
+  blocks_per_stage: [2, 2, 2, 2]
+  difn:
+    eps: 1.0e-5
+    reduction: 8
+    momentum: 0.1
+    track_running_stats: true
+  attention:
+    reduction: 8
+    spatial_kernel_size: 7
+  decoder:
+    dropout: 0.1
+  ablation:
+    disable_difn: false
+    disable_attention: false
+
+training:
+  epochs: 100
+  amp: false
+  gradient_clip_norm: 1.0
+  checkpoint_interval: 1
+  resume_checkpoint: ""
+  early_stopping:
+    enabled: true
+    patience: 15
+    min_delta: 0.0005
+  optimizer:
+    lr: 0.0002
+    weight_decay: 0.0001
+    betas: [0.9, 0.999]
+  scheduler:
+    type: "cosine"
+    min_lr: 1.0e-6
+    t_max: 100
+    step_size: 25
+    gamma: 0.5
+    mode: "max"
+    factor: 0.5
+    patience: 5
+  loss:
+    dice_weight: 0.6
+    bce_weight: 0.4
+  metrics:
+    threshold: 0.5
+    mode: "raw"
+
+inference:
+  checkpoint: ""
+  split: "test"
+  save_predictions: true
+
+runtime:
+  device: "cpu"
+  inference_only: false
+  cudnn_benchmark: false
+  enable_console_logs: true
+  show_progress_bar: true
+
+comparison:
+  run_baseline: true
+  baseline:
+    base_channels: 32
+    depth: 4
+    normalization:
+      type: "groupnorm"
+      groups: 8
+
+visualization:
+  enabled: true
+  qualitative_split: "val"
+  max_qualitative_samples: 0
+  progression_samples: 4

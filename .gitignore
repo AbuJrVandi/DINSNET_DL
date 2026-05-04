@@ -1,0 +1,36 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# Environments
+.venv/
+venv/
+env/
+
+# Outputs / artifacts
+outputs/
+checkpoints/
+*.pth
+*.pt
+*.onnx
+*.tfevents*
+*.log
+logs/
+figures/
+predictions/
+
+# Datasets (keep outside repo)
+datasets/
+data/
+datasets_debug*/
+datasets_debug_*/
+datasets_*/
+
+# Local overrides
+config.local.yaml
+configs/*.local.yaml
