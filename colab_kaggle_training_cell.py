@@ -14,7 +14,8 @@ import os
 import yaml
 
 print("🚀 Step 1: Cloning the DINSNET_DL repository...")
-!git clone https://github.com/AbuJrVandi/DINSNET_DL.git
+if not os.path.exists("DINSNET_DL"):
+    !git clone https://github.com/AbuJrVandi/DINSNET_DL.git
 %cd DINSNET_DL
 
 print("\n📦 Step 2: Installing dependencies...")
@@ -23,12 +24,12 @@ print("\n📦 Step 2: Installing dependencies...")
 !pip install thop gdown 
 
 print("\n📂 Step 3: Downloading Dataset from Google Drive...")
-# Automatically download your Google Drive folder using gdown
+# The script will download the folder directly using the link you provided.
+# ⚠️ IF THIS FAILS: You must go to Google Drive, right-click the folder -> Share -> Change to "Anyone with the link".
 folder_url = "https://drive.google.com/drive/folders/1NDKSCJKiMGGRkPhchk4BOCPfOue6Z5_p"
 dataset_path = "./datasets/my_training_data"
 os.makedirs("./datasets", exist_ok=True)
 !gdown --folder {folder_url} -O {dataset_path}
-
 print("\n⚙️ Step 4: Updating Configuration for the new dataset...")
 # Modify the config file dynamically to point to the downloaded dataset
 config_path = "configs/config.yaml"
