@@ -26,7 +26,6 @@ predictions/
 
 # Datasets (keep outside repo)
 datasets/
-data/
 datasets_debug*/
 datasets_debug_*/
 datasets_*/
